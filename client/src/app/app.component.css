@@ -1,3 +1,5 @@
+
+
 html {
   box-sizing: border-box;
 }
@@ -15,11 +17,12 @@ body {
 .App {
   width: 100%;
   max-width: 960px;
-  height: 500px;
+  height: 90vh;
   margin: 0 auto;
   display: flex;
   border: 1px solid #ccc;
   margin-top: 30px;
+  color: #333;
 }
 
 ul {
@@ -28,6 +31,7 @@ ul {
 
 .sidebar {
   flex-basis: 30%;
+  flex-shrink: 0;
   background-color: #300d4f;
   color: #fff;
   padding: 5px 10px;
@@ -62,8 +66,8 @@ ul {
 }
 
 .chat-window {
-  flex-grow: 1;
   display: flex;
+  flex-grow: 1;
   flex-direction: column;
   justify-content: space-between;
 }
@@ -82,14 +86,11 @@ ul {
 }
 
 .chat-session {
-  flex-grow: 1;
-  display: flex;
-  overflow: hidden;
+  height: calc(90vh - 170px);
+  overflow-y: auto;
 }
 
 .message-list {
-  flex-grow: 1;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -108,10 +109,45 @@ ul {
   margin-bottom: 3px;
 }
 
+.image-attachment {
+  max-width: 400px;
+  margin-bottom: 5px;
+}
+
+.chat-footer {
+  display: flex;
+  flex-direction: column;
+}
+
 .chat-footer {
   border-top: 1px solid #ccc;
 }
 
-.chat-footer form, .chat-footer input {
+.message-form {
+  display: flex;
+  flex-direction: column;
   width: 100%;
+}
+
+.message-form > div {
+  display: flex;
+}
+
+.chat-footer input {
+  padding: 10px;
+}
+
+.message-input {
+  flex-grow: 1;
+}
+
+.send-message {
+  background-color: #300d4f;
+  color: #fff;
+  border: 1px solid #300d4f;
+  padding: 10px;
+}
+
+.is-typing {
+  text-align: left;
 }

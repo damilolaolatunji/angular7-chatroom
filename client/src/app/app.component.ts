@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import Chatkit from '@pusher/chatkit-client';
 import axios from 'axios';
 
@@ -13,7 +13,9 @@ export class AppComponent {
   messages = [];
   users = [];
   currentUser: any;
-  currentRoom = {};
+  currentRoom = <any>{};
+  usersWhoAreTyping = [];
+  attachment = null;
 
   _username: string = '';
   get username(): string {
@@ -25,22 +27,52 @@ export class AppComponent {
   }
 
   _message: string = '';
+
   get message(): string {
     return this._message;
   }
 
   set message(value: string) {
+    this.sendTypingEvent();
     this._message = value;
   }
 
+  fileChangedHandler(event) {
+    const file = event.target.files[0];
+    this.attachment = file;
+    console.log(this.attachment);
+  }
+
   sendMessage() {
-    const { message, currentUser } = this;
-    currentUser.sendMessage({
+    const { message, currentUser, attachment } = this;
+    const messageObj = <any>{
       text: message,
       roomId: '<your room id>',
-    });
-    
-    this.message = '';
+    };
+
+    if (attachment) {
+      messageObj.attachment = {
+        file: attachment,
+        name: attachment.name,
+      };
+    }
+
+    currentUser.sendMessage(messageObj);
+
+    this.reset();
+    this.attachment = null;
+  }
+
+  @ViewChild('form') form;
+
+  reset() {
+    this.form.nativeElement.reset()
+  }
+
+  sendTypingEvent() {
+    const { currentUser, currentRoom } = this;
+    currentUser
+    .isTypingIn({ roomId: currentRoom.id });
   }
 
   addUser() {
@@ -70,16 +102,24 @@ export class AppComponent {
                 onPresenceChanged: (state, user) => {
                   this.users = currentUser.users.sort((a) => {
                     if (a.presence.state === 'online') return -1;
-                    
+
                     return 1;
                   });
                 },
+                onUserStartedTyping: user => {
+                  this.usersWhoAreTyping.push(user.name);
+                },
+                onUserStoppedTyping: user => {
+                  this.usersWhoAreTyping = this.usersWhoAreTyping.filter(username => username !== user.name);
+                }
               },
+            })
+            .then(currentRoom => {
+              this.currentRoom = currentRoom;
             });
 
             this.currentUser = currentUser;
             this.users = currentUser.users;
-            
           });
       })
         .catch(error => console.error(error))
