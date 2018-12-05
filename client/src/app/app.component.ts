@@ -45,6 +45,9 @@ export class AppComponent {
 
   sendMessage() {
     const { message, currentUser, attachment } = this;
+    
+    if (message.trim() === '') return;
+
     const messageObj = <any>{
       text: message,
       roomId: '<your room id>',
